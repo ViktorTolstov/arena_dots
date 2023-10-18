@@ -5,142 +5,156 @@ using ArenaGames.Network;
 using Gpm.WebView;
 using UnityEngine;
 
-public class ArenaGamesController : MonoBehaviour
+namespace ArenaGames
 {
-    // TODO: remove singleton
-    // TODO: move all instantiates and destroys with hide/show windows
-    public static ArenaGamesController Instance;
-
-    [SerializeField] private AGSplashScreen _splashScreenPrefab;
-    [SerializeField] private AGAuthUIController _authPanelPrefab;
-    [SerializeField] private AGInGameUIController _inGameControlPrefab;
-
-    private AGInGameUIController _inGameControl;
-    private AGNetworkControllerOld _networkControllerOld;
-    private AGNetworkController _networkController;
-    private AGUser _user;
-    private AGSplashScreen _splashScreen;
-    private AGEventServerController _eventServerController;
-
-    public AGInGameUIController GetInGameUIController() =>
-        _inGameControl;
-    
-    public event Action OnSuccessfulLoginEvent;
-    public event Action<string> OnNickNameUpdateEvent;
-    
-    // TODO: make private
-    public AGEventServerController EventServerController => _eventServerController;
-    public AGNetworkController NetworkController => _networkController;
-    public AGNetworkControllerOld NetworkControllerOld => _networkControllerOld;
-    public AGUser User => _user;
-
-    private void Awake()
+    public class ArenaGamesController : MonoBehaviour
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        // TODO: remove singleton
+        // TODO: move all instantiates and destroys with hide/show windows
+        public static ArenaGamesController Instance;
 
-        Instance = this;
+        [SerializeField] private AGSplashScreen _splashScreenPrefab;
+        [SerializeField] private AGAuthUIController _authPanelPrefab;
+        [SerializeField] private AGInGameUIController _inGameControlPrefab;
 
-        _networkControllerOld = GetComponent<AGNetworkControllerOld>();
-        _networkControllerOld.Setup(this);
+        private AGInGameUIController _inGameControl;
+        private AGNetworkControllerOld _networkControllerOld;
+        private AGNetworkController _networkController;
+        private AGUser _user;
+        private AGSplashScreen _splashScreen;
+        private AGEventServerController _eventServerController;
+        private ResponseStruct.GameInfoStruct _gameData;
+
         
-        _user = GetComponent<AGUser>();
+        public event Action OnSuccessfulLoginEvent;
+        public event Action<string> OnNickNameUpdateEvent;
+        
+        // TODO: make private
+        public AGEventServerController EventServerController => _eventServerController;
+        public AGNetworkController NetworkController => _networkController;
+        public AGNetworkControllerOld NetworkControllerOld => _networkControllerOld;
+        public AGUser User => _user;
+        public ResponseStruct.GameInfoStruct GameData => _gameData;
+        public AGInGameUIController GetInGameUIController() => _inGameControl;
 
-        _eventServerController = new AGEventServerController();
-        _eventServerController.Setup(this);
-
-        _networkController = new AGNetworkController();
-    }
-
-    private void Start()
-    {
-        DontDestroyOnLoad(gameObject);
-
-        if (!AGCore.IsInitialized)
-            AGCore.Initialize();
-
-        StartProcess();
-    }
-
-    public void StartProcess()
-    {
-        _splashScreen = Instantiate(_splashScreenPrefab).GetComponent<AGSplashScreen>();
-        _splashScreen.Setup(this);
-    }
-
-    public void ShowAuthScreen()
-    {
-        Instantiate(_authPanelPrefab);
-    }
-
-    private void ShowInGamePanel(bool isShow = true)
-    {
-        if (_inGameControl != null)
+        private void Awake()
         {
-            _inGameControl.gameObject.SetActive(isShow);
-        }
-        else
-        {
-            if (isShow)
+            if (Instance != null)
             {
-                _inGameControl = Instantiate(_inGameControlPrefab);
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+
+            _networkControllerOld = GetComponent<AGNetworkControllerOld>();
+            _networkControllerOld.Setup(this);
+            
+            _user = GetComponent<AGUser>();
+
+            _eventServerController = new AGEventServerController();
+            _eventServerController.Setup(this);
+
+            _networkController = new AGNetworkController();
+        }
+
+        private void Start()
+        {
+            DontDestroyOnLoad(gameObject);
+
+            if (!AGCore.IsInitialized)
+                AGCore.Initialize();
+
+            StartProcess();
+        }
+
+        public void StartProcess()
+        {
+            _splashScreen = Instantiate(_splashScreenPrefab).GetComponent<AGSplashScreen>();
+            _splashScreen.Setup(this);
+        }
+
+        public void ShowAuthScreen()
+        {
+            Instantiate(_authPanelPrefab);
+        }
+
+        private void ShowInGamePanel(bool isShow = true)
+        {
+            if (_inGameControl != null)
+            {
+                _inGameControl.gameObject.SetActive(isShow);
+            }
+            else
+            {
+                if (isShow)
+                {
+                    _inGameControl = Instantiate(_inGameControlPrefab);
+                }
             }
         }
-    }
 
-    /*private void OnLevelWasLoaded(int level)
-    {
-        if (level == 0)
-            if (AGUser.Current.m_AccessInfo == null)
-                StartSignInProcess();
-    }*/
-
-    public void HideSplashScreen()
-    {
-        if (GpmWebView.IsActive())
+        public void SetGameData(ResponseStruct.GameInfoStruct gameData)
         {
-            GpmWebView.Close();
+            _gameData = gameData;
+            foreach (var l in gameData.activeLeaderboards)
+            {
+                Debug.LogError(l.alias);
+            }
+        }
+
+        /*private void OnLevelWasLoaded(int level)
+        {
+            if (level == 0)
+                if (AGUser.Current.m_AccessInfo == null)
+                    StartSignInProcess();
+        }*/
+
+        public void HideSplashScreen()
+        {
+            if (GpmWebView.IsActive())
+            {
+                GpmWebView.Close();
+            }
+            
+            ShowInGamePanel();
         }
         
-        ShowInGamePanel();
-    }
-    
-    #region Events
-    
-    public void OnSuccessfulLogin()
-    {
-        Destroy(_splashScreen.gameObject);
+        #region Events
         
-        _eventServerController.ScheduleEvent(AGEventServerController.EventType.Login);
-        _eventServerController.SetOnline(true);
+        public void OnSuccessfulLogin()
+        {
+            Destroy(_splashScreen.gameObject);
+            
+            _eventServerController.ScheduleEvent(AGEventServerController.EventType.Login);
+            _eventServerController.SetOnline(true);
+            
+            _networkController.UpdateGameData();
+            
+            OnSuccessfulLoginEvent?.Invoke();
+        }
+
+        public void SetNickName(string nickName)
+        {
+            OnNickNameUpdateEvent?.Invoke(nickName);
+        }
+        #endregion
         
-        NetworkController.GetGameData();
+        #region Public Methods
+        public void UpdateScore(int value)
+        {
+            NetworkControllerOld.UpdateToLeaderboard(value);
+        }
+        #endregion
         
-        OnSuccessfulLoginEvent?.Invoke();
+        private void OnApplicationPause(bool isPaused)
+        {
+            Debug.Log("App paused " + isPaused);
+            _eventServerController.SetPaused(isPaused);
+            _eventServerController.ScheduleEvent(isPaused ? 
+                AGEventServerController.EventType.CollapseApp : 
+                AGEventServerController.EventType.ExpandApp);
+        }
     }
 
-    public void SetNickName(string nickName)
-    {
-        OnNickNameUpdateEvent?.Invoke(nickName);
-    }
-    #endregion
-    
-    #region Public Methods
-    public void UpdateScore(int value)
-    {
-        NetworkControllerOld.UpdateToLeaderboard(value);
-    }
-    #endregion
-    
-    private void OnApplicationPause(bool isPaused)
-    {
-        Debug.Log("App paused " + isPaused);
-        _eventServerController.SetPaused(isPaused);
-        _eventServerController.ScheduleEvent(isPaused ? 
-            AGEventServerController.EventType.CollapseApp : 
-            AGEventServerController.EventType.ExpandApp);
-    }
 }

@@ -1,4 +1,3 @@
-using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -7,7 +6,7 @@ namespace ArenaGames.Network
 {
     public class AGNetworkController
     {
-        public async UniTask GetGameData()
+        public async UniTask UpdateGameData()
         {
             var request = UnityWebRequest.Get(AGHelperURIs.GAME_INFO_API);
 
@@ -24,8 +23,8 @@ namespace ArenaGames.Network
                     Debug.Log("Failed to get data. Error message: " + request.error);
                     break;
                 case UnityWebRequest.Result.Success:
-                    Debug.LogError(request.downloadHandler.text);
-                    // var codeData = ResponseStruct.TryParse<ResponseStruct.CodeAttemptResponseStruct>(request.downloadHandler.text);
+                    var gameData = ResponseStruct.TryParse<ResponseStruct.GameInfoStruct>(request.downloadHandler.text);
+                    ArenaGamesController.Instance.SetGameData(gameData);
                     break;
             }
         }

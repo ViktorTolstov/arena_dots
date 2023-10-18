@@ -8,12 +8,16 @@ namespace ArenaGames
 {
     public class UIElement_Leaderboard : UIElementBase
     {
+        [SerializeField] private LeaderBoardTabBtn _leaderBoardTabBtnPrefab;
+        
         public Transform m_LeaderboardsParent;
         public Transform m_LocalLeaderboardParent;
 
         public GameObject m_LeaderboardEntry;
 
         private List<GameObject> m_AddedGameObjects = new List<GameObject>();
+        
+        private List<LeaderBoardTabBtn> _activeLeaderBoardTabBtns = new List<LeaderBoardTabBtn>();
 
         private void OnEnable()
         {
