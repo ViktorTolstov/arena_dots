@@ -26,11 +26,13 @@ namespace ForiDots
         private GameController _gameController;
         private Sequence _destroySequence = null;
         private UIElement_GameOverPanel _gameOverPanel;
+        private UIElement_GameHUD _gameHUD;
 
-        public void Setup(GameController gameController, UIElement_GameOverPanel gameOverPanel)
+        public void Setup(GameController gameController, UIElement_GameOverPanel gameOverPanel, UIElement_GameHUD gameHUD)
         {
             _gameController = gameController;
             _gameOverPanel = gameOverPanel;
+            _gameHUD = gameHUD;
 
             var fieldData = gameController.Field;
             foreach (var dotData in fieldData)
@@ -43,6 +45,9 @@ namespace ForiDots
 
             _scoreHolder.gameObject.SetActive(true);
             _timerHolder.gameObject.SetActive(true);
+
+            _gameController.ResetScore();
+            _gameHUD.EndGame += () => GameOver(true);
 
             _scoreHolder.UpdateScoreValue(_gameController.CurrentScore);
             StartCoroutine(GameTimer(_gameTime));
@@ -155,7 +160,7 @@ namespace ForiDots
             return typeId == -1 ? Color.black : _dotsColor[typeId];
         }
 
-        private void GameOver()
+        private void GameOver(bool silent = false)
         {
             Debug.Log("game over");
             for (int i = 0; i < _dotsViews.Count; i++)
@@ -165,8 +170,14 @@ namespace ForiDots
             _dotsViews.Clear();
             _scoreHolder.gameObject.SetActive(false);
             _timerHolder.gameObject.SetActive(false);
-            _gameOverPanel.Open();
-            _gameOverPanel.SetEndScore(_gameController.CurrentScore);
+
+            if (!silent)
+            {
+                _gameOverPanel.Open();
+                _gameOverPanel.SetEndScore(_gameController.CurrentScore);
+            }
+            StopAllCoroutines();
+            _gameHUD.EndGame -= () => GameOver(true);
         }
 
         private IEnumerator GameTimer(float gameTime)
@@ -176,6 +187,7 @@ namespace ForiDots
                 _timerHolder.UpdateTimer(gameTime - i);
                 yield return null;
             }
+            _gameHUD.Close();
             GameOver();
         }
     }
