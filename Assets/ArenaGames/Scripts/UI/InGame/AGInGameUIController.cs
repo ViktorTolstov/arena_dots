@@ -10,6 +10,7 @@ namespace ArenaGames
         [SerializeField] private UIElement_StartGamePanel _startGamePanel;
         [SerializeField] private UIElement_TopPanel _topPanel;
         [SerializeField] private UIElement_GameOverPanel _gameOverPanel;
+        [SerializeField] private UIElement_GameHUD _gameHUD;
         [SerializeField] private GameObject _bottomPanel;
         [SerializeField] private TabButton _leaderboardButton;
         [SerializeField] private TabButton _accountButton;
@@ -34,6 +35,8 @@ namespace ArenaGames
                     return _topPanel;
                 case var cls when cls == typeof(UIElement_GameOverPanel):
                     return _gameOverPanel;
+                case var cls when cls == typeof(UIElement_GameHUD):
+                    return _gameHUD;
                 default:
                     return null;
             }
@@ -44,7 +47,11 @@ namespace ArenaGames
             _playButton.onClick.AddListener(() => OnTapButtonClick(_startGamePanel, _playButton, false));
             _leaderboardButton.onClick.AddListener(() => OnTapButtonClick(_leaderboardPanel, _leaderboardButton));
             _accountButton.onClick.AddListener(() => OnTapButtonClick(_accountPanel, _accountButton));
-            _startGamePanel.gameStarted += () => _bottomPanel.gameObject.SetActive(false);
+            _startGamePanel.gameStarted += () =>
+            {
+                _gameHUD.Open();
+                _bottomPanel.gameObject.SetActive(false);
+            };
             Debug.Log("Bot panel closed");
             
             _playButton.onClick?.Invoke();
@@ -55,7 +62,11 @@ namespace ArenaGames
             _leaderboardButton.onClick.RemoveAllListeners();
             _accountButton.onClick.RemoveAllListeners();
             _playButton.onClick.RemoveAllListeners();
-            _startGamePanel.gameStarted -= () => _bottomPanel.gameObject.SetActive(false);
+            _startGamePanel.gameStarted -= () =>
+            {
+                _gameHUD.Open();
+                _bottomPanel.gameObject.SetActive(true);
+            };
         }
 
         private void OnTapButtonClick(UIElementBase panel, TabButton button, bool showTopPanel = true)

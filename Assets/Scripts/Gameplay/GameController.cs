@@ -41,6 +41,9 @@ namespace ForiDots
         private DotData _lastChosenDot;
         private GameModel _gameModel;
 
+        public void ResetScore() =>
+            _currentScore = 0;
+
         public void Setup(GameModel gameModel)
         {
             _gameModel = gameModel;
