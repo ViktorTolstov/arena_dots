@@ -28,7 +28,8 @@ namespace ArenaGames
         public static string LEADERBOARD_POST = $"{API_ADDRESS}/api/v2/gamedev/server/{GAME_ALIAS}/leaderboard/";
         public static string GET_ACHIEVEMENTS_URI = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/achievement";
         public static string ACHIEVEMENTS_POST_URI = $"{API_ADDRESS}/api/v2/gamedev/server/{GAME_ALIAS}/achievement/";
-        public static string RESEND_CONFIRM_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/next-attempt-send-code/";
+        public static string GET_NEXT_TRY_FOR_RESEND_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/next-attempt-send-code/";
+        public static string RESEND_CONFIRM_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/send-code-again/";
         
         public static string EVENT_SERVER_URI = "https://es1.arenavs.com/game-events";
         
@@ -69,6 +70,9 @@ namespace ArenaGames
                 .Replace(API_ADDRESS, apiAddress)
                 .Replace(GAME_ALIAS, gameAlias);
             ACHIEVEMENTS_POST_URI = ACHIEVEMENTS_POST_URI
+                .Replace(API_ADDRESS, apiAddress)
+                .Replace(GAME_ALIAS, gameAlias);
+            GET_NEXT_TRY_FOR_RESEND_CODE = GET_NEXT_TRY_FOR_RESEND_CODE
                 .Replace(API_ADDRESS, apiAddress)
                 .Replace(GAME_ALIAS, gameAlias);
             RESEND_CONFIRM_CODE = RESEND_CONFIRM_CODE

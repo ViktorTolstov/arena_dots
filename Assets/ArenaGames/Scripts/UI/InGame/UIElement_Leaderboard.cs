@@ -9,19 +9,44 @@ namespace ArenaGames
     public class UIElement_Leaderboard : UIElementBase
     {
         [SerializeField] private LeaderBoardTabBtn _leaderBoardTabBtnPrefab;
+        [SerializeField] private Transform _tabsHolder;
         
         public Transform m_LeaderboardsParent;
         public Transform m_LocalLeaderboardParent;
-
         public GameObject m_LeaderboardEntry;
-
         private List<GameObject> m_AddedGameObjects = new List<GameObject>();
-        
-        private List<LeaderBoardTabBtn> _activeLeaderBoardTabBtns = new List<LeaderBoardTabBtn>();
+        private List<LeaderBoardTabBtn> _currentTabs = new List<LeaderBoardTabBtn>();
 
-        private void OnEnable()
+        public void Setup()
         {
-            ArenaGamesController.Instance.NetworkControllerOld.GetLeaderboard(AGCore.Settings.LeaderboardId, OnLeaderboardsReceived);
+            var leaderBoards = ArenaGamesController.Instance.GameData.activeLeaderboards;
+            if (leaderBoards.Count == 0)
+            {
+                Debug.LogError("UIElement_Leaderboard:: there are no any active leaderboards for game");
+            }
+
+            UpdateLeaderboard(leaderBoards[0].alias);
+            
+            if (leaderBoards.Count > 1)
+            {
+                foreach (var lb in leaderBoards)
+                {
+                    var newTab = Instantiate(_leaderBoardTabBtnPrefab, _tabsHolder);
+                    newTab.Setup(lb.alias, lb.name, UpdateLeaderboard);
+                    newTab.SetActive(leaderBoards[0].name == lb.name);
+                    _currentTabs.Add(newTab);
+                }
+            }
+        }
+
+        private void UpdateLeaderboard(string lbAlias)
+        {
+            ArenaGamesController.Instance.NetworkControllerOld.GetLeaderboard(lbAlias, OnLeaderboardsReceived);
+            
+            foreach (var tab in _currentTabs)
+            {
+                tab.SetActive(lbAlias == tab.LbAlias);
+            }
         }
 
         private void OnLeaderboardsReceived(LeaderboardsStruct _Leaderboard)

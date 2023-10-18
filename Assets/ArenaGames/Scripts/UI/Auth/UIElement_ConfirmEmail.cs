@@ -31,7 +31,6 @@ namespace ArenaGames
         {
             var resetTime = await ArenaGamesController.Instance.NetworkController.GetResetData(_regData.email);
             _resetCodeDelta = resetTime - AGTimeController.Timestamp;
-            Debug.LogError(resetTime + " / " + _resetCodeDelta);
             _resendCodeButton.interactable = false;
             
             _needToUpdate = _resetCodeDelta > 0;
@@ -93,9 +92,11 @@ namespace ArenaGames
             _isWaitingForResponse = false;
         }
 
-        private void OnCodeResend()
+        private async void OnCodeResend()
         {
-            
+            _resendCodeButton.interactable = false;
+            await ArenaGamesController.Instance.NetworkController.ResendCode(_regData.email);
+            UpdateResendData();
         }
 
         private void OnError(string error)
@@ -111,7 +112,6 @@ namespace ArenaGames
         // TODO: replace with time tick event
         private void Update()
         {
-            Debug.LogError(_resetCodeDelta);
             if (!_needToUpdate) return;
             
             if (_resetCodeDelta < 0)
@@ -130,7 +130,6 @@ namespace ArenaGames
             var dateTime = DateTimeOffset.FromUnixTimeSeconds(intDelta).UtcDateTime;
             var formattedTime = dateTime.ToString("mm:ss");
             _resendCodeText.text = "Resend code in " + formattedTime;
-            Debug.LogError(formattedTime);
         }
 
         private void OnTimeFinish()

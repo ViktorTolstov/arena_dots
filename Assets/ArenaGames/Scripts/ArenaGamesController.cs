@@ -1,5 +1,4 @@
 using System;
-using ArenaGames;
 using ArenaGames.EventServer;
 using ArenaGames.Network;
 using Gpm.WebView;
@@ -97,18 +96,8 @@ namespace ArenaGames
         public void SetGameData(ResponseStruct.GameInfoStruct gameData)
         {
             _gameData = gameData;
-            foreach (var l in gameData.activeLeaderboards)
-            {
-                Debug.LogError(l.alias);
-            }
+            _inGameControl.LeaderboardPanel.Setup();
         }
-
-        /*private void OnLevelWasLoaded(int level)
-        {
-            if (level == 0)
-                if (AGUser.Current.m_AccessInfo == null)
-                    StartSignInProcess();
-        }*/
 
         public void HideSplashScreen()
         {

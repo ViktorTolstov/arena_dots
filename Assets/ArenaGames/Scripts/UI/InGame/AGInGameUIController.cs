@@ -5,6 +5,7 @@ namespace ArenaGames
 {
     public class AGInGameUIController : MonoBehaviour
     {
+        // TODO: move game logic to game itself and not sdk
         [SerializeField] private UIElement_Leaderboard _leaderboardPanel;
         [SerializeField] private UIElement_AccountPanel _accountPanel;
         [SerializeField] private UIElement_StartGamePanel _startGamePanel;
@@ -19,8 +20,9 @@ namespace ArenaGames
         private TabButton _lastClickedButton;
         private UIElementBase _lastOpenedWindow;
 
-        public GameObject GetBottomPanel() =>
-            _bottomPanel;
+        public GameObject BottomPanel => _bottomPanel;
+        public UIElement_Leaderboard LeaderboardPanel => _leaderboardPanel;
+        
         public UIElementBase GetUIElement<T>() where T : UIElementBase
         {
             switch (typeof(T))
@@ -43,15 +45,11 @@ namespace ArenaGames
         }
 
         private void OnEnable()
-        {
+        {                
             _playButton.onClick.AddListener(() => OnTapButtonClick(_startGamePanel, _playButton, false));
             _leaderboardButton.onClick.AddListener(() => OnTapButtonClick(_leaderboardPanel, _leaderboardButton));
             _accountButton.onClick.AddListener(() => OnTapButtonClick(_accountPanel, _accountButton));
-            _startGamePanel.gameStarted += () =>
-            {
-                _gameHUD.Open();
-                _bottomPanel.gameObject.SetActive(false);
-            };
+            _startGamePanel.gameStarted += OnGameStarted;
             Debug.Log("Bot panel closed");
             
             _playButton.onClick?.Invoke();
@@ -62,11 +60,13 @@ namespace ArenaGames
             _leaderboardButton.onClick.RemoveAllListeners();
             _accountButton.onClick.RemoveAllListeners();
             _playButton.onClick.RemoveAllListeners();
-            _startGamePanel.gameStarted -= () =>
-            {
-                _gameHUD.Open();
-                _bottomPanel.gameObject.SetActive(true);
-            };
+            _startGamePanel.gameStarted -= OnGameStarted;
+        }
+
+        private void OnGameStarted()
+        {
+            _gameHUD.Open();
+            _bottomPanel.gameObject.SetActive(true);
         }
 
         private void OnTapButtonClick(UIElementBase panel, TabButton button, bool showTopPanel = true)

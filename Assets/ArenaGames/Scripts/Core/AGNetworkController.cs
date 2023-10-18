@@ -58,14 +58,42 @@ namespace ArenaGames.Network
                     break;
             }
         }
-
-        public async UniTask<int> GetResetData(string email)
+        
+        public async UniTask ResendCode(string email)
         {
+            Debug.Log("ResendCode");
+
             var form = new WWWForm();
 
             form.AddField("email", email);
             
             var request = UnityWebRequest.Post(AGHelperURIs.RESEND_CONFIRM_CODE, form);
+
+            request.SetRequestHeader("accept", "application/json");
+
+            var operation = request.SendWebRequest();
+            await operation.ToUniTask();
+
+            switch (request.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.ProtocolError:
+                    Debug.Log("Failed to send events. Error message: " + request.error);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    Debug.Log("SendResult: " + request.downloadHandler.text);
+                    break;
+            }
+        }
+
+
+        public async UniTask<long> GetResetData(string email)
+        {
+            var form = new WWWForm();
+
+            form.AddField("email", email);
+            
+            var request = UnityWebRequest.Post(AGHelperURIs.GET_NEXT_TRY_FOR_RESEND_CODE, form);
             request.method = "GET";
 
             request.SetRequestHeader("accept", "application/json");
@@ -73,7 +101,7 @@ namespace ArenaGames.Network
             var operation = request.SendWebRequest();
             await operation.ToUniTask();
 
-            var resultTime = 0;
+            long resultTime = 0;
             switch (request.result)
             {
                 case UnityWebRequest.Result.ConnectionError:
@@ -81,10 +109,8 @@ namespace ArenaGames.Network
                     Debug.Log("Failed to sed events. Error message: " + request.error);
                     break;
                 case UnityWebRequest.Result.Success:
-                    Debug.LogError(request.downloadHandler.text);
                     var codeData = ResponseStruct.TryParse<ResponseStruct.CodeAttemptResponseStruct>(request.downloadHandler.text);
-
-                    resultTime = (int) long.Parse(codeData.nextAttemptTime) / 1000;
+                    resultTime = long.Parse(codeData.nextAttemptTime) / 1000;
                     break;
             }
 

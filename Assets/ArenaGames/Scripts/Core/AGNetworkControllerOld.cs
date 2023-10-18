@@ -209,6 +209,7 @@ public class AGNetworkControllerOld : MonoBehaviour
         StartCoroutine(IE_PostToLeaderboard(_Value));
     }
 
+    // TODO: refactor this
     private IEnumerator IE_PostToLeaderboard(int _Value)
     {
         WWWForm _Form = new WWWForm();
@@ -216,7 +217,7 @@ public class AGNetworkControllerOld : MonoBehaviour
         _Form.AddField("profileId", ArenaGamesController.Instance.User.PlayerInfo.id);
         _Form.AddField("value", _Value);
 
-        UnityWebRequest _Request = UnityWebRequest.Post(AGHelperURIs.LEADERBOARD_POST + AGCore.Settings.LeaderboardId + "/score", _Form);
+        UnityWebRequest _Request = UnityWebRequest.Post(AGHelperURIs.LEADERBOARD_POST + ArenaGamesController.Instance.GameData.activeLeaderboards[0].alias + "/score", _Form);
         _Request.method = "PATCH";
 
         _Request.SetRequestHeader("accept", "application/json");
