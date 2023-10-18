@@ -7,19 +7,45 @@ namespace ArenaGames
     {
         [SerializeField] private UIElement_Leaderboard _leaderboardPanel;
         [SerializeField] private UIElement_AccountPanel _accountPanel;
+        [SerializeField] private UIElement_StartGamePanel _startGamePanel;
         [SerializeField] private UIElement_TopPanel _topPanel;
+        [SerializeField] private UIElement_GameOverPanel _gameOverPanel;
+        [SerializeField] private GameObject _bottomPanel;
         [SerializeField] private TabButton _leaderboardButton;
         [SerializeField] private TabButton _accountButton;
         [SerializeField] private TabButton _playButton;
-        
+
         private TabButton _lastClickedButton;
         private UIElementBase _lastOpenedWindow;
 
+        public GameObject GetBottomPanel() =>
+            _bottomPanel;
+        public UIElementBase GetUIElement<T>() where T : UIElementBase
+        {
+            switch (typeof(T))
+            {
+                case var cls when cls == typeof(UIElement_Leaderboard):
+                    return _leaderboardPanel;
+                case var cls when cls == typeof(UIElement_AccountPanel):
+                    return _accountPanel;
+                case var cls when cls == typeof(UIElement_StartGamePanel):
+                    return _startGamePanel;
+                case var cls when cls == typeof(UIElement_TopPanel):
+                    return _topPanel;
+                case var cls when cls == typeof(UIElement_GameOverPanel):
+                    return _gameOverPanel;
+                default:
+                    return null;
+            }
+        }
+
         private void OnEnable()
         {
-            _playButton.onClick.AddListener(() => OnTapButtonClick(null, _playButton, false));
+            _playButton.onClick.AddListener(() => OnTapButtonClick(_startGamePanel, _playButton, false));
             _leaderboardButton.onClick.AddListener(() => OnTapButtonClick(_leaderboardPanel, _leaderboardButton));
             _accountButton.onClick.AddListener(() => OnTapButtonClick(_accountPanel, _accountButton));
+            _startGamePanel.gameStarted += () => _bottomPanel.gameObject.SetActive(false);
+            Debug.Log("Bot panel closed");
             
             _playButton.onClick?.Invoke();
         }
@@ -29,6 +55,7 @@ namespace ArenaGames
             _leaderboardButton.onClick.RemoveAllListeners();
             _accountButton.onClick.RemoveAllListeners();
             _playButton.onClick.RemoveAllListeners();
+            _startGamePanel.gameStarted -= () => _bottomPanel.gameObject.SetActive(false);
         }
 
         private void OnTapButtonClick(UIElementBase panel, TabButton button, bool showTopPanel = true)

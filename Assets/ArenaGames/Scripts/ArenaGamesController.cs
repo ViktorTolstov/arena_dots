@@ -21,6 +21,9 @@ public class ArenaGamesController : MonoBehaviour
     private AGUser _user;
     private AGSplashScreen _splashScreen;
     private AGEventServerController _eventServerController;
+
+    public AGInGameUIController GetInGameUIController() =>
+        _inGameControl;
     
     public event Action OnSuccessfulLoginEvent;
     public event Action<string> OnNickNameUpdateEvent;

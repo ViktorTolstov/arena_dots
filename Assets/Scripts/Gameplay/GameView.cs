@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ArenaGames;
 using DG.Tweening;
 using Fori.Helpers;
 using ForiDots.UI;
@@ -13,18 +15,22 @@ namespace ForiDots
     /// </summary>
     public class GameView : MonoBehaviour
     {
+        [SerializeField] private float _gameTime = 60;
         [SerializeField] private DotView _dotsView;
         [SerializeField] private LineView _lineView;
         [SerializeField] private List<Color> _dotsColor;
         [SerializeField] private ScoreHolder _scoreHolder;
+        [SerializeField] private TimerHolder _timerHolder;
 
         private List<DotView> _dotsViews = new ();
         private GameController _gameController;
         private Sequence _destroySequence = null;
-        
-        public void Setup(GameController gameController)
+        private UIElement_GameOverPanel _gameOverPanel;
+
+        public void Setup(GameController gameController, UIElement_GameOverPanel gameOverPanel)
         {
             _gameController = gameController;
+            _gameOverPanel = gameOverPanel;
 
             var fieldData = gameController.Field;
             foreach (var dotData in fieldData)
@@ -35,7 +41,11 @@ namespace ForiDots
                 _dotsViews.Add(newDot);
             }
 
+            _scoreHolder.gameObject.SetActive(true);
+            _timerHolder.gameObject.SetActive(true);
+
             _scoreHolder.UpdateScoreValue(_gameController.CurrentScore);
+            StartCoroutine(GameTimer(_gameTime));
         }
         
         private void DestroyDots(List<Vector2Int> dotsToDestroy, Action updateAction)
@@ -143,6 +153,30 @@ namespace ForiDots
         private Color GetColorByTypeId(int typeId)
         {
             return typeId == -1 ? Color.black : _dotsColor[typeId];
+        }
+
+        private void GameOver()
+        {
+            Debug.Log("game over");
+            for (int i = 0; i < _dotsViews.Count; i++)
+            {
+                Destroy(_dotsViews[i].gameObject);
+            }
+            _dotsViews.Clear();
+            _scoreHolder.gameObject.SetActive(false);
+            _timerHolder.gameObject.SetActive(false);
+            _gameOverPanel.Open();
+            _gameOverPanel.SetEndScore(_gameController.CurrentScore);
+        }
+
+        private IEnumerator GameTimer(float gameTime)
+        {
+            for (float i = 0; i < gameTime; i += Time.deltaTime)
+            {
+                _timerHolder.UpdateTimer(gameTime - i);
+                yield return null;
+            }
+            GameOver();
         }
     }
 }

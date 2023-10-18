@@ -1,3 +1,4 @@
+using ArenaGames;
 using System;
 using UnityEngine;
 
@@ -35,7 +36,9 @@ namespace ForiDots
             _gameController = new GameController();
             _gameController.Setup(_gameModel);
 
-            _gameView.Setup(_gameController);
+            UIElement_StartGamePanel startPanel = (UIElement_StartGamePanel)ArenaGamesController.Instance.GetInGameUIController().GetUIElement<UIElement_StartGamePanel>();
+            UIElement_GameOverPanel gameOverPanel = (UIElement_GameOverPanel)ArenaGamesController.Instance.GetInGameUIController().GetUIElement<UIElement_GameOverPanel>();
+            startPanel.gameStarted += () => { _gameView.Setup(_gameController, gameOverPanel); };
         }
     }
 }
