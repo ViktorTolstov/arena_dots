@@ -21,7 +21,7 @@ namespace ArenaGames.Network
             {
                 case UnityWebRequest.Result.ConnectionError:
                 case UnityWebRequest.Result.ProtocolError:
-                    Debug.LogError("Failed to get data. Error message: " + request.error);
+                    Debug.Log("Failed to get data. Error message: " + request.error);
                     break;
                 case UnityWebRequest.Result.Success:
                     Debug.LogError(request.downloadHandler.text);

@@ -1288,7 +1288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ce57fd44e8b455392d3650bbe765a1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameTime: 5
+  _gameTime: 20
   _dotsView: {fileID: -4120703154513465442, guid: 8e52b7c3d077f4bc8b14146a19c7f5c5, type: 3}
   _lineView: {fileID: 72529013}
   _dotsColor:
