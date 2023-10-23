@@ -17,6 +17,13 @@ namespace ArenaGames
         private List<GameObject> m_AddedGameObjects = new List<GameObject>();
         private List<LeaderBoardTabBtn> _currentTabs = new List<LeaderBoardTabBtn>();
 
+        private string _currentLeaderboardAlias;
+
+        public void OnEnable()
+        {
+            UpdateLeaderboard(_currentLeaderboardAlias);
+        }
+
         public void Setup()
         {
             var leaderBoards = ArenaGamesController.Instance.GameData.activeLeaderboards;
@@ -24,8 +31,6 @@ namespace ArenaGames
             {
                 Debug.LogError("UIElement_Leaderboard:: there are no any active leaderboards for game");
             }
-
-            UpdateLeaderboard(leaderBoards[0].alias);
             
             if (leaderBoards.Count > 1)
             {
@@ -37,10 +42,13 @@ namespace ArenaGames
                     _currentTabs.Add(newTab);
                 }
             }
+
+            UpdateLeaderboard(leaderBoards[0].alias);
         }
 
         private void UpdateLeaderboard(string lbAlias)
         {
+            _currentLeaderboardAlias = lbAlias;
             ArenaGamesController.Instance.NetworkControllerOld.GetLeaderboard(lbAlias, OnLeaderboardsReceived);
             
             foreach (var tab in _currentTabs)

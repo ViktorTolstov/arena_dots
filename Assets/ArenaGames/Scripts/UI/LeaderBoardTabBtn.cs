@@ -36,7 +36,7 @@ namespace ArenaGames
             _updateLbAction?.Invoke(_lbAlias);
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             _btn.onClick.RemoveAllListeners();
         }

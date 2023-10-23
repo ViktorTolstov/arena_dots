@@ -17,9 +17,6 @@ namespace ArenaGames.EventServer
             Disconnect,
             CollapseApp,
             ExpandApp,
-            
-            // TODO: for tests only
-            DestroyDot
         }
         
         private const string LoginEvent = "login";
@@ -41,7 +38,6 @@ namespace ArenaGames.EventServer
             {EventType.Disconnect, DisconnectEvent},
             {EventType.CollapseApp, CollapseAppEvent},
             {EventType.ExpandApp, ExpandAppEvent},
-            {EventType.DestroyDot, "destroy-dot"},
         };
 
         private ArenaGamesController _controller;

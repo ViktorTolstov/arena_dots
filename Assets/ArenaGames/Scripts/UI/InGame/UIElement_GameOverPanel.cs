@@ -27,8 +27,6 @@ namespace ArenaGames
         private void ReturnToStart()
         {
             m_InGameUIController.BottomPanel.SetActive(true);
-            Debug.Log("Bot panel opened");
-            m_InGameUIController.GetUIElement<UIElement_StartGamePanel>().Open();
             Close();
         }
     }

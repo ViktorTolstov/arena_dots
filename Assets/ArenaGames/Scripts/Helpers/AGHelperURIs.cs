@@ -10,9 +10,9 @@ namespace ArenaGames
         
         private static string STAGE_ADDRESS = "https://stage.arenagames.api.ldtc.space";
         private static string PROD_ADDRESS = "https://api.arenavs.com";
-        
         private static string STAGE_ADDRESS_CLIENT = "https://stage.arenagames.test.ldtc.space";
         private static string PROD_ADDRESS_CLIENT = "https://arenavs.com";
+        public static string EVENT_SERVER_URI = "https://es1.arenavs.com/game-events";
         
         public static string WEBVIEW_AUTH_URI = $"{CLIENT_ADDRESS}/auth/sign-in";
         
@@ -30,8 +30,9 @@ namespace ArenaGames
         public static string ACHIEVEMENTS_POST_URI = $"{API_ADDRESS}/api/v2/gamedev/server/{GAME_ALIAS}/achievement/";
         public static string GET_NEXT_TRY_FOR_RESEND_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/next-attempt-send-code/";
         public static string RESEND_CONFIRM_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/send-code-again/";
-        
-        public static string EVENT_SERVER_URI = "https://es1.arenavs.com/game-events";
+        public static string UPDATE_SCORE = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/leaderboard/score/";
+        public static string IS_GAME_ALLOWED = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/leaderboard/is-game-allowed/";
+        public static string PAY_GAME = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/leaderboard/pay-for-game/";
         
         public static void UpdateUris(bool isProd, string gameAlias)
         {
@@ -76,6 +77,15 @@ namespace ArenaGames
                 .Replace(API_ADDRESS, apiAddress)
                 .Replace(GAME_ALIAS, gameAlias);
             RESEND_CONFIRM_CODE = RESEND_CONFIRM_CODE
+                .Replace(API_ADDRESS, apiAddress)
+                .Replace(GAME_ALIAS, gameAlias);
+            UPDATE_SCORE = UPDATE_SCORE
+                .Replace(API_ADDRESS, apiAddress)
+                .Replace(GAME_ALIAS, gameAlias);
+            IS_GAME_ALLOWED = IS_GAME_ALLOWED
+                .Replace(API_ADDRESS, apiAddress)
+                .Replace(GAME_ALIAS, gameAlias);
+            PAY_GAME = PAY_GAME
                 .Replace(API_ADDRESS, apiAddress)
                 .Replace(GAME_ALIAS, gameAlias);
         }

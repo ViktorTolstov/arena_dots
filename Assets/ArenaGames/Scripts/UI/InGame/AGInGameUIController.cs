@@ -5,13 +5,10 @@ namespace ArenaGames
 {
     public class AGInGameUIController : MonoBehaviour
     {
-        // TODO: move game logic to game itself and not sdk
         [SerializeField] private UIElement_Leaderboard _leaderboardPanel;
         [SerializeField] private UIElement_AccountPanel _accountPanel;
-        [SerializeField] private UIElement_StartGamePanel _startGamePanel;
         [SerializeField] private UIElement_TopPanel _topPanel;
-        [SerializeField] private UIElement_GameOverPanel _gameOverPanel;
-        [SerializeField] private UIElement_GameHUD _gameHUD;
+        [SerializeField] private UIElement_PayPanel _payPanel;
         [SerializeField] private GameObject _bottomPanel;
         [SerializeField] private TabButton _leaderboardButton;
         [SerializeField] private TabButton _accountButton;
@@ -22,36 +19,13 @@ namespace ArenaGames
 
         public GameObject BottomPanel => _bottomPanel;
         public UIElement_Leaderboard LeaderboardPanel => _leaderboardPanel;
-        
-        public UIElementBase GetUIElement<T>() where T : UIElementBase
-        {
-            switch (typeof(T))
-            {
-                case var cls when cls == typeof(UIElement_Leaderboard):
-                    return _leaderboardPanel;
-                case var cls when cls == typeof(UIElement_AccountPanel):
-                    return _accountPanel;
-                case var cls when cls == typeof(UIElement_StartGamePanel):
-                    return _startGamePanel;
-                case var cls when cls == typeof(UIElement_TopPanel):
-                    return _topPanel;
-                case var cls when cls == typeof(UIElement_GameOverPanel):
-                    return _gameOverPanel;
-                case var cls when cls == typeof(UIElement_GameHUD):
-                    return _gameHUD;
-                default:
-                    return null;
-            }
-        }
 
         private void OnEnable()
         {                
-            _playButton.onClick.AddListener(() => OnTapButtonClick(_startGamePanel, _playButton, false));
+            _playButton.onClick.AddListener(() => OnTapButtonClick(null, _playButton, false));
             _leaderboardButton.onClick.AddListener(() => OnTapButtonClick(_leaderboardPanel, _leaderboardButton));
             _accountButton.onClick.AddListener(() => OnTapButtonClick(_accountPanel, _accountButton));
-            _startGamePanel.gameStarted += OnGameStarted;
-            Debug.Log("Bot panel closed");
-            
+
             _playButton.onClick?.Invoke();
         }
 
@@ -60,13 +34,6 @@ namespace ArenaGames
             _leaderboardButton.onClick.RemoveAllListeners();
             _accountButton.onClick.RemoveAllListeners();
             _playButton.onClick.RemoveAllListeners();
-            _startGamePanel.gameStarted -= OnGameStarted;
-        }
-
-        private void OnGameStarted()
-        {
-            _gameHUD.Open();
-            _bottomPanel.gameObject.SetActive(true);
         }
 
         private void OnTapButtonClick(UIElementBase panel, TabButton button, bool showTopPanel = true)
@@ -90,6 +57,11 @@ namespace ArenaGames
             
             if (_lastOpenedWindow != null)
                 _lastOpenedWindow.Close();
+        }
+
+        public void ShowPayPanel(bool isVisible)
+        {                
+            _payPanel.gameObject.SetActive(isVisible);
         }
     }
 }

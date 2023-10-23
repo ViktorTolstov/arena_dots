@@ -14,7 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameName: DOTS
   GameAlias: DOTS
-  LeaderboardId: dots-online
-  ServerToken: gamedev.0a1605eb-1d12-4cfd-9fff-628b58684a9a
   IsProd: 0
   UseWebViewForSignIn: 1

@@ -19,12 +19,19 @@ namespace ArenaGames
             public string type;
             public string code;
             public string message;
+            [JsonProperty("params")] public List<string> messageParams;
         }
         
         [Serializable]
         public class CodeAttemptResponseStruct : BaseStruct
         {
             public string nextAttemptTime;
+        }
+        
+        [Serializable]
+        public class StatusStruct : BaseStruct
+        {
+            public bool ok;
         }
         
         [Serializable]
@@ -39,6 +46,19 @@ namespace ArenaGames
         {
             public string alias;
             public string name;
+        }
+        
+        [Serializable]
+        public class RefreshAuthStruct : BaseStruct
+        {
+            public TokenStruct accessToken;
+        }
+        
+        [Serializable]
+        public class TokenStruct : BaseStruct
+        {
+            public string token;
+            public long expiresIn;
         }
         
         public static T TryParse<T>(string objectToDeserialize) where T : BaseStruct

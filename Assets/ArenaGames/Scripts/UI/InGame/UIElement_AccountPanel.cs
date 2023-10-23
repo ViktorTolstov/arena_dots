@@ -30,8 +30,8 @@ namespace ArenaGames
             m_BtnDeleteAccount.onClick.AddListener(() => OpenURL("https://arenavs.com/deleteaccount"));
             m_LogOutBtn.onClick.AddListener(OnLogoutClicked);
 
-            ArenaGamesController.Instance.NetworkControllerOld.GetAchievements("100", "0", SetupAchievements);
-            ArenaGamesController.Instance.NetworkControllerOld.ProgressAchievement("AM_Loyal", 1);
+            /*ArenaGamesController.Instance.NetworkControllerOld.GetAchievements("100", "0", SetupAchievements);
+            ArenaGamesController.Instance.NetworkControllerOld.ProgressAchievement("AM_Loyal", 1);*/
         }
 
         private void OnDisable()
@@ -70,6 +70,7 @@ namespace ArenaGames
 
             ArenaGamesController.Instance.EventServerController.ScheduleEvent(AGEventServerController.EventType.Logout);
             ArenaGamesController.Instance.EventServerController.SetOnline(false);
+            ArenaGamesController.Instance.PlayerData.ClearRefreshToken();
 
             ArenaGamesController.Instance.StartProcess();
             Destroy(m_InGameUIController.gameObject);

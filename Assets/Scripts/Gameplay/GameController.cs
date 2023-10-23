@@ -147,9 +147,6 @@ namespace ForiDots
             _lastChosenDot = null;
             _chosenDots.Clear();
             _gameModel.SaveData(_currentScore);
-            
-            ArenaGamesController.Instance.UpdateScore(deltaScore);
-            ArenaGamesController.Instance.EventServerController.ScheduleEvent(AGEventServerController.EventType.DestroyDot);
 
             return dotsToDestroy;
         }

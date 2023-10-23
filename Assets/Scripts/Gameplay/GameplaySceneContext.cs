@@ -1,4 +1,5 @@
 using ArenaGames;
+using ForiDots.UI;
 using UnityEngine;
 
 namespace ForiDots
@@ -9,37 +10,56 @@ namespace ForiDots
     public class GameplaySceneContext : MonoBehaviour
     {
         [SerializeField] private GameView _gameView;
+        [SerializeField] private GameStateMachine _gameStateMachine;
         
         private GameController _gameController;
         private GameModel _gameModel;
-
         private bool _isStarted;
+        private UIElement_StartGamePanel _startGamePanel;
+
+        public GameStateMachine GameStateMachine => _gameStateMachine;
         
         private void Start()
         {
-            ArenaGamesController.Instance.OnSuccessfulLoginEvent += StartGame;
+            ArenaGamesController.Instance.OnSuccessfulLoginEvent += TryStartGame;
         }
 
         private void OnDisable()
         {
-            ArenaGamesController.Instance.OnSuccessfulLoginEvent -= StartGame;
+            ArenaGamesController.Instance.OnSuccessfulLoginEvent -= TryStartGame;
         }
 
-        private void StartGame()
+        private void TryStartGame()
         {
             if (_isStarted) return;
-            
+
             _isStarted = true;
             _gameModel = new GameModel();
 
             _gameController = new GameController();
             _gameController.Setup(_gameModel);
 
-            var inGameUIController = ArenaGamesController.Instance.GetInGameUIController();
-            var startPanel = (UIElement_StartGamePanel)inGameUIController.GetUIElement<UIElement_StartGamePanel>();
-            var gameOverPanel = (UIElement_GameOverPanel)inGameUIController.GetUIElement<UIElement_GameOverPanel>();
-            var gameHUD = (UIElement_GameHUD)inGameUIController.GetUIElement<UIElement_GameHUD>();
-            startPanel.gameStarted += () => { _gameView.Setup(_gameController, gameOverPanel, gameHUD); };
+            _gameStateMachine.OnStartGame += StartGame;
+            _gameStateMachine.OnGameFinish += StopGame;
+        }
+
+        private async void StartGame()
+        {                
+            var isGameAllowed = await ArenaGamesController.Instance.TryStartGame();
+
+            if (isGameAllowed)
+            {
+                _gameView.Setup(_gameController, this);
+            }
+            else
+            {
+                _gameStateMachine.SetStartState();
+            }
+        }
+
+        private void StopGame(int score)
+        {
+            ArenaGamesController.Instance.StopGame(score);
         }
     }
 }

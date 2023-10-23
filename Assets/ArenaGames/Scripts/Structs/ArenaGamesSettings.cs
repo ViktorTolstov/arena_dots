@@ -6,7 +6,6 @@ namespace ArenaGames
     {
         public string GameName;
         public string GameAlias;
-        public string ServerToken;
         public bool IsProd;
         public bool UseWebViewForSignIn;
     }

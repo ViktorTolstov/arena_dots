@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using ArenaGames;
 using DG.Tweening;
 using Fori.Helpers;
 using ForiDots.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ForiDots
 {
@@ -21,18 +20,17 @@ namespace ForiDots
         [SerializeField] private List<Color> _dotsColor;
         [SerializeField] private ScoreHolder _scoreHolder;
         [SerializeField] private TimerHolder _timerHolder;
+        [SerializeField] private Button _returnButton;
 
         private List<DotView> _dotsViews = new ();
         private GameController _gameController;
+        private GameplaySceneContext _context;
         private Sequence _destroySequence = null;
-        private UIElement_GameOverPanel _gameOverPanel;
-        private UIElement_GameHUD _gameHUD;
 
-        public void Setup(GameController gameController, UIElement_GameOverPanel gameOverPanel, UIElement_GameHUD gameHUD)
+        public void Setup(GameController gameController, GameplaySceneContext context)
         {
             _gameController = gameController;
-            _gameOverPanel = gameOverPanel;
-            _gameHUD = gameHUD;
+            _context = context;
 
             var fieldData = gameController.Field;
             foreach (var dotData in fieldData)
@@ -45,9 +43,12 @@ namespace ForiDots
 
             _scoreHolder.gameObject.SetActive(true);
             _timerHolder.gameObject.SetActive(true);
+            _lineView.gameObject.SetActive(true);
+            
+            _returnButton.onClick.RemoveAllListeners();
+            _returnButton.onClick.AddListener(ReturnToStartState);
 
             _gameController.ResetScore();
-            _gameHUD.EndGame += () => GameOver(true);
 
             _scoreHolder.UpdateScoreValue(_gameController.CurrentScore);
             StartCoroutine(GameTimer(_gameTime));
@@ -162,22 +163,25 @@ namespace ForiDots
 
         private void GameOver(bool silent = false)
         {
-            Debug.Log("game over");
-            for (int i = 0; i < _dotsViews.Count; i++)
+            foreach (var dotView in _dotsViews)
             {
-                Destroy(_dotsViews[i].gameObject);
+                Destroy(dotView.gameObject);
             }
+            
             _dotsViews.Clear();
             _scoreHolder.gameObject.SetActive(false);
             _timerHolder.gameObject.SetActive(false);
+            _lineView.gameObject.SetActive(false);
 
-            if (!silent)
+            if (silent)
             {
-                _gameOverPanel.Open();
-                _gameOverPanel.SetEndScore(_gameController.CurrentScore);
+                _context.GameStateMachine.FinishGame(0);
+            } else
+            {
+                _context.GameStateMachine.StopGame(_gameController.CurrentScore);
             }
+            
             StopAllCoroutines();
-            _gameHUD.EndGame -= () => GameOver(true);
         }
 
         private IEnumerator GameTimer(float gameTime)
@@ -187,8 +191,13 @@ namespace ForiDots
                 _timerHolder.UpdateTimer(gameTime - i);
                 yield return null;
             }
-            _gameHUD.Close();
+            
             GameOver();
+        }
+
+        private void ReturnToStartState()
+        {
+            GameOver(true);
         }
     }
 }

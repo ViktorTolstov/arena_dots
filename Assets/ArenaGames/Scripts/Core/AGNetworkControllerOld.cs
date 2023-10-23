@@ -126,11 +126,11 @@ public class AGNetworkControllerOld : MonoBehaviour
                 case UnityWebRequest.Result.ConnectionError:
                 case UnityWebRequest.Result.ProtocolError:
                 {
-                    Debug.LogError(_Request.downloadHandler.text);
+                    Debug.Log(_Request.downloadHandler.text);
                     var errorData = ResponseStruct.TryParse<ResponseStruct.ErrorResponseStruct>(_Request.downloadHandler.text);
                     var errorText = errorData == null ? 
                         AGErrorMessages.GetErrorMessage(_Request.result == UnityWebRequest.Result.ConnectionError, _Request.responseCode, AGErrorMessages.ERROR_MESSAGES_SIGNIN) :
-                        errorData.message;
+                        errorData.messageParams != null && errorData.messageParams.Count > 0 ? errorData.messageParams[0] : errorData.message;
 
                     _OnError?.Invoke(errorText);
                     break;
@@ -176,7 +176,7 @@ public class AGNetworkControllerOld : MonoBehaviour
     {
         Debug.Log("Trying to load leaderboard: " + _LeaderboardId);
 
-        UnityWebRequest _Request = UnityWebRequest.Get(AGHelperURIs.LEADERBOARD_URI + _LeaderboardId + "?aroundPlayerLimit=1&limit=25&offset=0");
+        UnityWebRequest _Request = UnityWebRequest.Get(AGHelperURIs.LEADERBOARD_URI + _LeaderboardId + "?aroundPlayerLimit=1&limit=10&offset=0");
 
         _Request.SetRequestHeader("accept", "application/json");
         _Request.SetRequestHeader("access-token", ArenaGamesController.Instance.User.AccessInfo.accessToken.token);
@@ -193,6 +193,7 @@ public class AGNetworkControllerOld : MonoBehaviour
             }
             if (_Request.result == UnityWebRequest.Result.Success)
             {
+                Debug.Log(_Request.downloadHandler.text);
                 LeaderboardsStruct _Leaderboard = new LeaderboardsStruct();
                 _Leaderboard.leaderboards = new List<Leaderboard>();
                 _Leaderboard.aroundLeaderboards = new List<AroundLeaderboard>();
@@ -204,41 +205,8 @@ public class AGNetworkControllerOld : MonoBehaviour
         }
     }
 
-    public void UpdateToLeaderboard(int _Value)
-    {
-        StartCoroutine(IE_PostToLeaderboard(_Value));
-    }
-
-    // TODO: refactor this
-    private IEnumerator IE_PostToLeaderboard(int _Value)
-    {
-        WWWForm _Form = new WWWForm();
-
-        _Form.AddField("profileId", ArenaGamesController.Instance.User.PlayerInfo.id);
-        _Form.AddField("value", _Value);
-
-        UnityWebRequest _Request = UnityWebRequest.Post(AGHelperURIs.LEADERBOARD_POST + ArenaGamesController.Instance.GameData.activeLeaderboards[0].alias + "/score", _Form);
-        _Request.method = "PATCH";
-
-        _Request.SetRequestHeader("accept", "application/json");
-        _Request.SetRequestHeader("x-auth-server", AGCore.Settings.ServerToken);
-
-        yield return _Request.SendWebRequest();
-
-        if (_Request.isDone)
-        {
-            if (_Request.result == UnityWebRequest.Result.ConnectionError || _Request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.Log("Failed to send leaderboard score: " + _Request.downloadHandler.text);
-            }
-            else if (_Request.result == UnityWebRequest.Result.Success)
-            {
-                Debug.Log("Score posted successfully");
-            }
-        }
-    }
-
-    public void GetAchievements(string _Limit, string _Offset, UnityAction<AchievementsStruct> _Action)
+    // TODO: refactor this code
+    /*public void GetAchievements(string _Limit, string _Offset, UnityAction<AchievementsStruct> _Action)
     {
         StartCoroutine(IE_GetAchievements(_Limit, _Offset, _Action));
     }
@@ -305,7 +273,5 @@ public class AGNetworkControllerOld : MonoBehaviour
                 Debug.Log("achievement posted successfully");
             }
         }
-    }
-    
-    
+    }*/
 }

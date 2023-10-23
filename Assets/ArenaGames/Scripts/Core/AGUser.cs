@@ -17,10 +17,10 @@ namespace ArenaGames
 
         #region Auth
 
-        public void SetSignInData(LoginStruct accessInfo)
+        public void SetSignInData(LoginStruct accessInfo, bool withLoginEvent = true)
         {
             AccessInfo = accessInfo;
-            StartCoroutine(ApplyAccessInfo());
+            StartCoroutine(ApplyAccessInfo(null, withLoginEvent));
         }
         
         public void SignInUser(LoginData loginData, UnityAction onSuccess, UnityAction<string> onError)
@@ -56,22 +56,27 @@ namespace ArenaGames
             }
         }
 
-        private IEnumerator ApplyAccessInfo(UnityAction callback = null)
+        private IEnumerator ApplyAccessInfo(UnityAction callback = null, bool withLoginEvent = true)
         {
             ArenaGamesController.Instance.HideSplashScreen();
+            
+            ArenaGamesController.Instance.PlayerData.SaveRefreshToken(AccessInfo.refreshToken);
             
             StartCoroutine(nameof(IE_RefreshAuthToken));
             yield return StartCoroutine(nameof(IE_GetUserData));
             yield return StartCoroutine(nameof(IE_GetUserCurrency));
-                        
-            ArenaGamesController.Instance.OnSuccessfulLogin();
+
+            if (withLoginEvent)
+            {
+                ArenaGamesController.Instance.OnSuccessfulLogin();
+            }
             
             callback?.Invoke();
         }
 
         private IEnumerator IE_RefreshAuthToken()
         {
-            // TODO: make refresh on tokent expiree and not every 30 seconds
+            // TODO: make refresh on token expire and not every 30 seconds
             yield return new WaitForSeconds(30f);
 
             while (true)
