@@ -148,7 +148,7 @@ namespace ForiDots
             _chosenDots.Clear();
             _gameModel.SaveData(_currentScore);
             
-            ArenaGamesController.Instance.ProgressAchievement("DOTS_RM", 200);
+            ArenaGamesController.Instance.ProgressAchievement("DOTS_RM", deltaScore);
 
             return dotsToDestroy;
         }
