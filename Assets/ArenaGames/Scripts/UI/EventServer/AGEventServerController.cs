@@ -67,8 +67,11 @@ namespace ArenaGames.EventServer
 
             if (isForce)
             {
-                SendEvent(targetEvent);
-            } 
+                SendEvent(new List<string>()
+                {
+                    targetEvent
+                });
+            }
             else
             {
                 _scheduledEvents.Add(targetEvent);
@@ -83,10 +86,9 @@ namespace ArenaGames.EventServer
 
                 if (_scheduledEvents.Count == 0 || !IsActive) continue;
                 
-                // TODO: make work with few events
-                var targetEvent = _scheduledEvents[0];
-                _scheduledEvents.RemoveAt(0);
-                SendEvent(targetEvent);
+                await SendEvent(_scheduledEvents);
+                
+                _scheduledEvents.Clear();
             }
         }
 
@@ -100,9 +102,9 @@ namespace ArenaGames.EventServer
             }
         }
 
-        private void SendEvent(string targetEvent)
+        private async UniTask SendEvent(List<string> targetEvents)
         {
-            _controller.NetworkController.SendEventServerEvent(targetEvent);
+            await _controller.NetworkController.SendEventServerEvent(targetEvents);
         }
 
         public void SetOnline(bool isOnline)

@@ -206,7 +206,7 @@ public class AGNetworkControllerOld : MonoBehaviour
     }
 
     // TODO: refactor this code
-    /*public void GetAchievements(string _Limit, string _Offset, UnityAction<AchievementsStruct> _Action)
+    public void GetAchievements(string _Limit, string _Offset, UnityAction<AchievementsStruct> _Action)
     {
         StartCoroutine(IE_GetAchievements(_Limit, _Offset, _Action));
     }
@@ -241,7 +241,7 @@ public class AGNetworkControllerOld : MonoBehaviour
         }
     }
 
-    public void ProgressAchievement(string _Achievement, int _Num)
+    /*public void ProgressAchievement(string _Achievement, int _Num)
     {
         StartCoroutine(IE_ProgressAchievement(_Achievement, _Num));
     }

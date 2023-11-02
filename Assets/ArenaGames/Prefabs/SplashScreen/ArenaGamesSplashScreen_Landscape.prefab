@@ -1011,7 +1011,7 @@ GameObject:
   - component: {fileID: 3760590740534756118}
   - component: {fileID: 9141934287833349775}
   m_Layer: 5
-  m_Name: ArenaGamesSplashScreen
+  m_Name: ArenaGamesSplashScreen_Landscape
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

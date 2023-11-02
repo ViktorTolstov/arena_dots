@@ -26,8 +26,8 @@ namespace ArenaGames
         public static string CURRENCY_URI = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/wallet";
         public static string LEADERBOARD_URI = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/leaderboard/";
         public static string LEADERBOARD_POST = $"{API_ADDRESS}/api/v2/gamedev/server/{GAME_ALIAS}/leaderboard/";
-        public static string GET_ACHIEVEMENTS_URI = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/achievement";
-        public static string ACHIEVEMENTS_POST_URI = $"{API_ADDRESS}/api/v2/gamedev/server/{GAME_ALIAS}/achievement/";
+        public static string GET_ACHIEVEMENTS_URI = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/achievement";
+        public static string ACHIEVEMENTS_PATCH_URI = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/achievement/";
         public static string GET_NEXT_TRY_FOR_RESEND_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/next-attempt-send-code/";
         public static string RESEND_CONFIRM_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/send-code-again/";
         public static string UPDATE_SCORE = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/leaderboard/score/";
@@ -70,7 +70,7 @@ namespace ArenaGames
             GET_ACHIEVEMENTS_URI = GET_ACHIEVEMENTS_URI
                 .Replace(API_ADDRESS, apiAddress)
                 .Replace(GAME_ALIAS, gameAlias);
-            ACHIEVEMENTS_POST_URI = ACHIEVEMENTS_POST_URI
+            ACHIEVEMENTS_PATCH_URI = ACHIEVEMENTS_PATCH_URI
                 .Replace(API_ADDRESS, apiAddress)
                 .Replace(GAME_ALIAS, gameAlias);
             GET_NEXT_TRY_FOR_RESEND_CODE = GET_NEXT_TRY_FOR_RESEND_CODE

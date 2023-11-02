@@ -4022,7 +4022,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 99
+  m_SortingOrder: 1001
   m_TargetDisplay: 0
 --- !u!114 &5211270758926423473
 MonoBehaviour:
@@ -6573,9 +6573,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AGAuthUIController: {fileID: 5211270758926423476}
   m_InGameUIController: {fileID: 0}
-  m_CodeField: {fileID: 1038533396796547582}
-  Btn_Back: {fileID: 5211270759911005856}
-  m_BtnConfirm: {fileID: 5211270760725269490}
+  _codeField: {fileID: 0}
+  _backButton: {fileID: 0}
+  _confirmButton: {fileID: 0}
+  _resendCodeButton: {fileID: 0}
+  _resendCodeText: {fileID: 0}
 --- !u!1 &5211270759911005858
 GameObject:
   m_ObjectHideFlags: 0

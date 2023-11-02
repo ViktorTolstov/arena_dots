@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -35,15 +37,29 @@ namespace ArenaGames.Network
             }
         }
         
-        public async UniTask SendEventServerEvent(string eventName)
+        public async UniTask SendEventServerEvent(List<string> events)
         {
-            Debug.Log("SendEventServerEvent:: " + eventName);
+            Debug.Log("SendEventServerEvents");
 
             var form = new WWWForm();
 
-            form.AddField("gameId", AGCore.Settings.GameName);
-            form.AddField("userId", ArenaGamesController.Instance.User.PlayerInfo.username);
-            form.AddField("eventType", eventName);
+            var dataEvents = new List<ResponseStruct.EventStruct>();
+
+            foreach (var targetEvent in events)
+            {
+                var dataStruct = new ResponseStruct.EventStruct()
+                {
+                    gameId = AGCore.Settings.GameName,
+                    userId = ArenaGamesController.Instance.User.PlayerInfo.username,
+                    eventType = targetEvent,
+                    timestamp = AGTimeController.TimestampMS,
+                };
+                
+                dataEvents.Add(dataStruct);
+            }
+
+            var serializedData = JsonConvert.SerializeObject(dataEvents);
+            form.AddField("events", serializedData);
             
             var request = UnityWebRequest.Post(AGHelperURIs.EVENT_SERVER_URI, form);
 
@@ -238,6 +254,63 @@ namespace ArenaGames.Network
             }
             
             return false;
+        }
+        
+        public async UniTask RefreshUserCurrency()
+        {
+            var request = UnityWebRequest.Get(AGHelperURIs.CURRENCY_URI);
+
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("access-token", ArenaGamesController.Instance.User.AccessInfo.accessToken.token);
+
+            var operation = request.SendWebRequest();
+            await operation.ToUniTask();
+
+            switch (request.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.ProtocolError:
+                    Debug.Log("Failed to refresh user currency: " + request.error);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    Debug.Log("Success refresh user currency: " + request.downloadHandler.text);
+                    if (ArenaGamesController.Instance.User.CurrencyInfo == null)
+                    {
+                        ArenaGamesController.Instance.User.CurrencyInfo = new CurrenciesData();
+                    }
+                    ArenaGamesController.Instance.User.CurrencyInfo.CurrencyInfo = JsonConvert.DeserializeObject<List<CurrencyInfoStruct>>(request.downloadHandler.text);
+                    break;
+            }
+        }
+        
+        public async UniTask ProgressAchievement(string achievement, int num)
+        {
+            Debug.Log("ProgressAchievement");
+            
+            var form = new WWWForm();
+
+            form.AddField("operation", "INCREMENT");
+            form.AddField("value", num);
+            
+            var request = UnityWebRequest.Post(AGHelperURIs.ACHIEVEMENTS_PATCH_URI + achievement + "/progress", form);
+            request.method = "PATCH";
+
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("access-token", ArenaGamesController.Instance.User.AccessInfo.accessToken.token);
+
+            var operation = request.SendWebRequest();
+            await operation.ToUniTask();
+
+            switch (request.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.ProtocolError:
+                    Debug.Log("Failed to refresh user currency: " + request.error);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    Debug.Log("Success progress achievement: " + request.downloadHandler.text);
+                    break;
+            }
         }
     }
 }

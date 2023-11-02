@@ -61,6 +61,15 @@ namespace ArenaGames
             public long expiresIn;
         }
         
+        [Serializable]
+        public class EventStruct : BaseStruct
+        {
+            public string gameId;
+            public string userId;
+            public string eventType;
+            public long timestamp;
+        }
+        
         public static T TryParse<T>(string objectToDeserialize) where T : BaseStruct
         {
             try

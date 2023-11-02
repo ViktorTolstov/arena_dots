@@ -44,6 +44,12 @@ namespace ArenaGames
             
             panel?.Open();
             button.UpdatePress(true);
+            
+            if (showTopPanel)
+            {
+                _topPanel.UpdateData();
+            }
+            
             _topPanel.gameObject.SetActive(showTopPanel);
             
             _lastClickedButton = button;

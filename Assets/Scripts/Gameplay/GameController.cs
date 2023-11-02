@@ -147,6 +147,8 @@ namespace ForiDots
             _lastChosenDot = null;
             _chosenDots.Clear();
             _gameModel.SaveData(_currentScore);
+            
+            ArenaGamesController.Instance.ProgressAchievement("DOTS_RM", 200);
 
             return dotsToDestroy;
         }

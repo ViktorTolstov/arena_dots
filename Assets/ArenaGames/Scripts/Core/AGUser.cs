@@ -61,10 +61,10 @@ namespace ArenaGames
             ArenaGamesController.Instance.HideSplashScreen();
             
             ArenaGamesController.Instance.PlayerData.SaveRefreshToken(AccessInfo.refreshToken);
+            ArenaGamesController.Instance.NetworkController.RefreshUserCurrency();
             
             StartCoroutine(nameof(IE_RefreshAuthToken));
             yield return StartCoroutine(nameof(IE_GetUserData));
-            yield return StartCoroutine(nameof(IE_GetUserCurrency));
 
             if (withLoginEvent)
             {
@@ -124,29 +124,6 @@ namespace ArenaGames
                 {
                     PlayerInfo = JsonUtility.FromJson<PlayerInfoStruct>(_Request.downloadHandler.text);
                     ArenaGamesController.Instance.SetNickName(PlayerInfo.username);
-                }
-            }
-        }
-
-        private IEnumerator IE_GetUserCurrency()
-        {
-            UnityWebRequest _Request = UnityWebRequest.Get(AGHelperURIs.CURRENCY_URI);
-
-            _Request.SetRequestHeader("accept", "application/json");
-            _Request.SetRequestHeader("access-token", AccessInfo.accessToken.token);
-
-            yield return _Request.SendWebRequest();
-
-            if (_Request.isDone)
-            {
-                if (_Request.result == UnityWebRequest.Result.ConnectionError || _Request.result == UnityWebRequest.Result.ProtocolError)
-                {
-                    Debug.LogError(_Request.downloadHandler.text);
-                }
-                else if (_Request.result == UnityWebRequest.Result.Success)
-                {
-                    CurrencyInfo = new CurrenciesData();
-                    CurrencyInfo.CurrencyInfo = JsonConvert.DeserializeObject<List<CurrencyInfoStruct>>(_Request.downloadHandler.text);
                 }
             }
         }

@@ -30,8 +30,7 @@ namespace ArenaGames
             m_BtnDeleteAccount.onClick.AddListener(() => OpenURL("https://arenavs.com/deleteaccount"));
             m_LogOutBtn.onClick.AddListener(OnLogoutClicked);
 
-            /*ArenaGamesController.Instance.NetworkControllerOld.GetAchievements("100", "0", SetupAchievements);
-            ArenaGamesController.Instance.NetworkControllerOld.ProgressAchievement("AM_Loyal", 1);*/
+            ArenaGamesController.Instance.NetworkControllerOld.GetAchievements("100", "0", SetupAchievements);
         }
 
         private void OnDisable()

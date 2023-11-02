@@ -14,9 +14,16 @@ namespace ArenaGames
         // TODO: move all instantiates and destroys with hide/show windows
         public static ArenaGamesController Instance;
 
-        [SerializeField] private AGSplashScreen _splashScreenPrefab;
-        [SerializeField] private AGAuthUIController _authPanelPrefab;
-        [SerializeField] private AGInGameUIController _inGameControlPrefab;
+        [SerializeField] private AGSplashScreen _splashScreenPrefabLandscape;
+        [SerializeField] private AGAuthUIController _authPanelPrefabLandscape;
+        [SerializeField] private AGInGameUIController _inGameControlPrefabLandscape;
+
+        [SerializeField] private AGSplashScreen _splashScreenPrefabPortrait;
+        [SerializeField] private AGAuthUIController _authPanelPrefabPortrait;
+        [SerializeField] private AGInGameUIController _inGameControlPrefabPortrait;
+
+        private const float FlipLayoutFactor = 1.34f;
+        private bool IsVertical = Screen.width < Screen.height * FlipLayoutFactor;
 
         private AGInGameUIController _inGameControl;
         private AGNetworkControllerOld _networkControllerOld;
@@ -75,7 +82,8 @@ namespace ArenaGames
 
         public async void StartProcess()
         {
-            _splashScreen = Instantiate(_splashScreenPrefab).GetComponent<AGSplashScreen>();
+            var targetSplashScreenPrefab = IsVertical ? _splashScreenPrefabPortrait : _splashScreenPrefabLandscape;
+            _splashScreen = Instantiate(targetSplashScreenPrefab).GetComponent<AGSplashScreen>();
             
             var isRefreshExist = _playerData.TryGetRefreshToken(out var token, out var expiresIn);
             
@@ -86,7 +94,8 @@ namespace ArenaGames
 
         public void ShowAuthScreen()
         {
-            Instantiate(_authPanelPrefab);
+            var targetAuthPanelPrefab = IsVertical ? _authPanelPrefabPortrait : _authPanelPrefabLandscape;
+            Instantiate(targetAuthPanelPrefab);
         }
 
         private void ShowInGamePanel(bool isShow = true)
@@ -97,10 +106,10 @@ namespace ArenaGames
             }
             else
             {
-                if (isShow)
-                {
-                    _inGameControl = Instantiate(_inGameControlPrefab);
-                }
+                if (!isShow) return;
+                
+                var targetGameControlPrefab = IsVertical ? _inGameControlPrefabPortrait : _inGameControlPrefabLandscape;
+                _inGameControl = Instantiate(targetGameControlPrefab);
             }
         }
 
@@ -165,6 +174,11 @@ namespace ArenaGames
             }
 
             return isGameAllowed;
+        }
+        
+        public async UniTask ProgressAchievement(string achievementName, int count)
+        {
+            await NetworkController.ProgressAchievement(achievementName, count);
         }
         #endregion
         
