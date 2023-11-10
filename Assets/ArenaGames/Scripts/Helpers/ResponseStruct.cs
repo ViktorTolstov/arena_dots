@@ -62,12 +62,60 @@ namespace ArenaGames
         }
         
         [Serializable]
+        public class EventsStruct : BaseStruct
+        {
+            public List<EventStruct> events;
+        }
+        
+        [Serializable]
         public class EventStruct : BaseStruct
         {
             public string gameId;
             public string userId;
             public string eventType;
             public long timestamp;
+        }
+        
+        [Serializable]
+        public class Leaderboard: BaseStruct
+        {
+            public string profileId;
+            public string username;
+            public int position;
+            public int score;
+            public object createdAt;
+        }
+        
+        [Serializable]
+        public class LeaderboardsStruct: BaseStruct
+        {
+            public List<Leaderboard> leaderboards = new ();
+            public List<Leaderboard> aroundLeaderboards = new ();
+        }
+
+        [Serializable]
+        public class AchievementEntryStruct : BaseStruct
+        {
+            public string alias;
+            public object dateReceipt;
+            public string description;
+            public string name;
+            public bool completed;
+        }
+
+        [Serializable]
+        public class AchievementsStruct : BaseStruct
+        {
+            public int limit;
+            public int offset;
+            public int totalDocs;
+            public int totalPages;
+            public bool hasNextPage;
+            public bool hasPrevPage;
+            public object nextPage;
+            public object prevPage;
+            public int page;
+            public List<AchievementEntryStruct> docs;
         }
         
         public static T TryParse<T>(string objectToDeserialize) where T : BaseStruct

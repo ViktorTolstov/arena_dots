@@ -50,10 +50,9 @@ public class UIElement_SignUp : UIElementBase
         m_RegData.password = m_FieldPassword.text;
         m_RegData.username = m_FieldUsername.text;
 
-        ArenaGamesController.Instance.NetworkControllerOld.TryRegisterUser(m_RegData, OnSuccessfulLogin, OnError);
+        ArenaGamesController.Instance.NetworkController.RegisterUser(m_RegData, OnSuccessfulLogin, OnError);
 
         m_BtnLogin.interactable = false;
-
         m_IsWaitingForResponse = true;
     }
 

@@ -13,7 +13,6 @@ namespace ArenaGames
             {
                 Settings = (ArenaGamesSettings)Resources.Load("AGSettings", typeof(ArenaGamesSettings));
                 AGHelperURIs.UpdateUris(Settings.IsProd, Settings.GameAlias);
-                AGErrorMessages.Initialize();
                 IsInitialized = true;
             }
         }

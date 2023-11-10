@@ -52,7 +52,7 @@ namespace ArenaGames
             if (AGCore.Settings.UseWebViewForSignIn)
             {
 #if (UNITY_ANDROID || UNITY_IOS) && !UNITY_EDITOR
-            _controller.NetworkControllerOld.OpenSignInWebView();
+            _controller.NetworkController.OpenSignInWebView();
             return;
 #endif
             }

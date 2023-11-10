@@ -62,7 +62,7 @@ namespace ArenaGames
             OnError("");
 
             _regData.code = _codeField.text;
-            ArenaGamesController.Instance.NetworkControllerOld.TryConfirmUser(_regData, OnSuccess, OnError);
+            ArenaGamesController.Instance.NetworkController.ConfirmEmail(_regData, OnSuccess, OnError);
 
             _confirmButton.interactable = false;
 

@@ -49,6 +49,7 @@ namespace ArenaGames
 
         private void OnLoginBtnClicked()
         {
+            // TODO: refactor allocation
             ArenaGamesController.Instance.User.SignInUser(new LoginData() { username = m_FieldUsername.text, password = m_FieldPassword.text }, OnSuccessfulLogin, OnError);
             
             m_BtnLogin.interactable = false;

@@ -25,12 +25,11 @@ namespace ArenaGames
         public static string CONFIRM_EMAIL_URI = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/confirmation-email";
         public static string CURRENCY_URI = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/wallet";
         public static string LEADERBOARD_URI = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/leaderboard/";
-        public static string LEADERBOARD_POST = $"{API_ADDRESS}/api/v2/gamedev/server/{GAME_ALIAS}/leaderboard/";
         public static string GET_ACHIEVEMENTS_URI = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/achievement";
         public static string ACHIEVEMENTS_PATCH_URI = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/achievement/";
         public static string GET_NEXT_TRY_FOR_RESEND_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/next-attempt-send-code/";
         public static string RESEND_CONFIRM_CODE = $"{API_ADDRESS}/api/v2/gamedev/client/{GAME_ALIAS}/user-registration/send-code-again/";
-        public static string UPDATE_SCORE = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/leaderboard/score/";
+        public static string UPDATE_SCORE = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/leaderboard/win/";
         public static string IS_GAME_ALLOWED = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/leaderboard/is-game-allowed/";
         public static string PAY_GAME = $"{API_ADDRESS}/api/v3/gamedev/client/{GAME_ALIAS}/leaderboard/pay-for-game/";
         
@@ -62,9 +61,6 @@ namespace ArenaGames
                 .Replace(API_ADDRESS, apiAddress)
                 .Replace(GAME_ALIAS, gameAlias);
             LEADERBOARD_URI = LEADERBOARD_URI
-                .Replace(API_ADDRESS, apiAddress)
-                .Replace(GAME_ALIAS, gameAlias);
-            LEADERBOARD_POST = LEADERBOARD_POST
                 .Replace(API_ADDRESS, apiAddress)
                 .Replace(GAME_ALIAS, gameAlias);
             GET_ACHIEVEMENTS_URI = GET_ACHIEVEMENTS_URI

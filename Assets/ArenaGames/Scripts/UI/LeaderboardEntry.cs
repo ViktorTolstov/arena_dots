@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 
 using UnityEngine;
@@ -41,5 +42,10 @@ public class LeaderboardEntry : MonoBehaviour
             if (m_CurrentSprite != null)
                 m_CurrentSprite.sprite = m_HighlightSprite;
         }
+    }
+
+    public void SetupButton(Action onButtonClick)
+    {
+        
     }
 }

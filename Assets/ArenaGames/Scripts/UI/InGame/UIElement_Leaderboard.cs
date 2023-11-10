@@ -1,8 +1,11 @@
 using System.Collections.Generic;
-
+using System.Linq;
+using ArenaGames.Network;
 using TMPro;
 
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.UI;
 
 namespace ArenaGames
 {
@@ -10,14 +13,17 @@ namespace ArenaGames
     {
         [SerializeField] private LeaderBoardTabBtn _leaderBoardTabBtnPrefab;
         [SerializeField] private Transform _tabsHolder;
-        
+        [SerializeField] private Button _previousBtn;
+        [SerializeField] private Button _nextBtn;
+
         public Transform m_LeaderboardsParent;
         public Transform m_LocalLeaderboardParent;
         public GameObject m_LeaderboardEntry;
-        private List<GameObject> m_AddedGameObjects = new List<GameObject>();
+        private List<GameObject> _leaderboardItems = new List<GameObject>();
         private List<LeaderBoardTabBtn> _currentTabs = new List<LeaderBoardTabBtn>();
 
         private string _currentLeaderboardAlias;
+        private int _currentPage = 0;
 
         public void OnEnable()
         {
@@ -44,12 +50,16 @@ namespace ArenaGames
             }
 
             UpdateLeaderboard(leaderBoards[0].alias);
+            
+            _nextBtn.onClick.AddListener(OpenNextPage);
+            _previousBtn.onClick.AddListener(OpenPreviousPage);
         }
 
         private void UpdateLeaderboard(string lbAlias)
         {
+            _currentPage = 0;
             _currentLeaderboardAlias = lbAlias;
-            ArenaGamesController.Instance.NetworkControllerOld.GetLeaderboard(lbAlias, OnLeaderboardsReceived);
+            ArenaGamesController.Instance.NetworkController.GetLeaderboard(lbAlias, _currentPage * AGNetworkController.EntriesLimit, OnLeaderboardsReceived);
             
             foreach (var tab in _currentTabs)
             {
@@ -57,44 +67,60 @@ namespace ArenaGames
             }
         }
 
-        private void OnLeaderboardsReceived(LeaderboardsStruct _Leaderboard)
+
+        private void OnLeaderboardsReceived(ResponseStruct.LeaderboardsStruct leaderboard)
         {
-            foreach (var gameObject in m_AddedGameObjects)
+            _previousBtn?.gameObject.SetActive(_currentPage > 0);
+            // _nextBtn.gameObject.SetActive(_currentPage > 0);
+            
+            // TODO: переделать на нормальную фактори
+            foreach (var gameObject in _leaderboardItems)
             {
                 Destroy(gameObject);
             }
 
-            m_AddedGameObjects = new List<GameObject>();
+            _leaderboardItems = new List<GameObject>();
 
-            bool _HasMineComeUp = false;
-
-            for (int i = 0; i < _Leaderboard.leaderboards.Count; i++)
+            var hasMineComeUp = leaderboard.leaderboards.Any(x => x.profileId == ArenaGamesController.Instance.User.PlayerInfo.id);
+            
+            if (leaderboard.leaderboards.Count == 0) return;
+            
+            if (!hasMineComeUp && leaderboard.aroundLeaderboards.Count > 0 && leaderboard.aroundLeaderboards[0].position < leaderboard.leaderboards[0].position)
             {
-                GameObject _Obj = Instantiate(m_LeaderboardEntry);
-                _Obj.GetComponent<LeaderboardEntry>().SetupEntry(_Leaderboard.leaderboards[i].position.ToString(), _Leaderboard.leaderboards[i].username, _Leaderboard.leaderboards[i].score.ToString(), "-", _Leaderboard.leaderboards[i].profileId == ArenaGamesController.Instance.User.PlayerInfo.id);
-                _Obj.transform.SetParent(m_LeaderboardsParent.transform);
-                _Obj.transform.localScale = Vector3.one;
-
-                m_AddedGameObjects.Add(_Obj);
-
-                if (_Leaderboard.leaderboards[i].profileId == ArenaGamesController.Instance.User.PlayerInfo.id)
-                {
-                    _HasMineComeUp = true;
-                }
+                CreateItem(leaderboard.aroundLeaderboards[0]);
             }
 
-            if (!_HasMineComeUp)
+            foreach (var entry in leaderboard.leaderboards)
             {
-                if (_Leaderboard.aroundLeaderboards.Count > 0)
-                {
-                    GameObject _Obj = Instantiate(m_LeaderboardEntry);
-                    _Obj.GetComponent<LeaderboardEntry>().SetupEntry(_Leaderboard.aroundLeaderboards[0].position.ToString(), _Leaderboard.aroundLeaderboards[0].username, _Leaderboard.aroundLeaderboards[0].score.ToString(), "-", true);
-                    _Obj.transform.SetParent(m_LocalLeaderboardParent.transform);
-                    _Obj.transform.localScale = Vector3.one;
-
-                    m_AddedGameObjects.Add(_Obj);
-                }
+                CreateItem(entry);
             }
+            
+            if (!hasMineComeUp && leaderboard.aroundLeaderboards.Count > 0 && leaderboard.aroundLeaderboards[0].position > leaderboard.leaderboards[^1].position)
+            {
+                CreateItem(leaderboard.aroundLeaderboards[0]);
+            }
+        }
+        
+        private void OpenNextPage()
+        {
+            _currentPage++;
+            ArenaGamesController.Instance.NetworkController.GetLeaderboard(_currentLeaderboardAlias, _currentPage * AGNetworkController.EntriesLimit, OnLeaderboardsReceived);
+        }
+
+        private void OpenPreviousPage()
+        {
+            _currentPage--;
+            ArenaGamesController.Instance.NetworkController.GetLeaderboard(_currentLeaderboardAlias, _currentPage * AGNetworkController.EntriesLimit, OnLeaderboardsReceived);
+        }
+
+        private void CreateItem(ResponseStruct.Leaderboard leaderboard)
+        {
+            var obj = Instantiate(m_LeaderboardEntry);
+            obj.GetComponent<LeaderboardEntry>().SetupEntry(leaderboard.position.ToString(), leaderboard.username, leaderboard.score.ToString(), "-", leaderboard.profileId == ArenaGamesController.Instance.User.PlayerInfo.id);
+            obj.transform.SetParent(m_LeaderboardsParent.transform);
+            obj.transform.localScale = Vector3.one;
+
+            _leaderboardItems.Add(obj);
         }
     }
 }

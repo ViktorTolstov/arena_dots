@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3572810319040497248}
   - component: {fileID: 8273175336155526654}
-  - component: {fileID: 3462369067454067992}
-  - component: {fileID: -3456026352175168009}
   m_Layer: 0
   m_Name: ArenaGamesController
   m_TagString: Untagged
@@ -52,27 +50,3 @@ MonoBehaviour:
   _splashScreenPrefabPortrait: {fileID: 9141934287833349775, guid: 0eed86fb645ad7f46a3b51ec29ce5ff0, type: 3}
   _authPanelPrefabPortrait: {fileID: 5211270758926423476, guid: 306efdb45b2e0ab4baa43ff11b5459ff, type: 3}
   _inGameControlPrefabPortrait: {fileID: 3105680963599746104, guid: 37a645f598e28964b93fbca2671379a7, type: 3}
---- !u!114 &3462369067454067992
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1511895485035689648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b3ed7b282f92e04c91896c5033cd37f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-3456026352175168009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1511895485035689648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2750ad592810f146aa975277b365a62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

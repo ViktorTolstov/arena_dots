@@ -9,6 +9,7 @@ namespace ArenaGames
         [SerializeField] private UIElement_AccountPanel _accountPanel;
         [SerializeField] private UIElement_TopPanel _topPanel;
         [SerializeField] private UIElement_PayPanel _payPanel;
+        [SerializeField] private ConnectionErrorPopup _connectionErrorPanel;
         [SerializeField] private GameObject _bottomPanel;
         [SerializeField] private TabButton _leaderboardButton;
         [SerializeField] private TabButton _accountButton;
@@ -68,6 +69,11 @@ namespace ArenaGames
         public void ShowPayPanel(bool isVisible)
         {                
             _payPanel.gameObject.SetActive(isVisible);
+        }
+        
+        public void ShowConnectionError(bool isVisible)
+        {                
+            _connectionErrorPanel.gameObject.SetActive(isVisible);
         }
     }
 }

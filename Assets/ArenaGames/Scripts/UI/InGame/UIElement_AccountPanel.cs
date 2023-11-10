@@ -25,12 +25,15 @@ namespace ArenaGames
         private void OnEnable()
         {
             m_BtnSocialPlatforms.onClick.AddListener(OnSocialBtnClicked);
+            
+            // TODO: move to uris
             m_BtnFAQ.onClick.AddListener(() => OpenURL("https://arenavs.com/about"));
             m_BtnCustomSupport.onClick.AddListener(() => OpenURL("https://arenavs.com/about"));
             m_BtnDeleteAccount.onClick.AddListener(() => OpenURL("https://arenavs.com/deleteaccount"));
             m_LogOutBtn.onClick.AddListener(OnLogoutClicked);
 
-            ArenaGamesController.Instance.NetworkControllerOld.GetAchievements("100", "0", SetupAchievements);
+            // TODO: make pages system
+            ArenaGamesController.Instance.NetworkController.GetAchievements(100, 0, SetupAchievements);
         }
 
         private void OnDisable()
@@ -42,7 +45,7 @@ namespace ArenaGames
             m_LogOutBtn.onClick.RemoveListener(OnLogoutClicked);
         }
 
-        private void SetupAchievements(AchievementsStruct _Achievements)
+        private void SetupAchievements(ResponseStruct.AchievementsStruct achievements)
         {
             foreach (GameObject _Obj in m_AddedMissions)
             {
@@ -51,7 +54,7 @@ namespace ArenaGames
 
             m_AddedMissions = new List<GameObject>();
 
-            foreach (AchievementEntryStruct _Achievement in _Achievements.docs)
+            foreach (ResponseStruct.AchievementEntryStruct _Achievement in achievements.docs)
             {
                 GameObject _Obj = Instantiate(m_AchievementsEntry);
                 m_AddedMissions.Add(_Obj);

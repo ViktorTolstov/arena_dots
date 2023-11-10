@@ -26,7 +26,7 @@ namespace ArenaGames
         private bool IsVertical = Screen.width < Screen.height * FlipLayoutFactor;
 
         private AGInGameUIController _inGameControl;
-        private AGNetworkControllerOld _networkControllerOld;
+        private AGAuthUIController _authPanel;
         private AGNetworkController _networkController;
         private AGUser _user;
         private AGSplashScreen _splashScreen;
@@ -40,7 +40,6 @@ namespace ArenaGames
         // TODO: make private
         public AGEventServerController EventServerController => _eventServerController;
         public AGNetworkController NetworkController => _networkController;
-        public AGNetworkControllerOld NetworkControllerOld => _networkControllerOld;
         public AGUser User => _user;
         public ResponseStruct.GameInfoStruct GameData => _gameData;
         public AGInGameUIController InGameControl => _inGameControl;
@@ -55,11 +54,14 @@ namespace ArenaGames
             }
 
             Instance = this;
-
-            _networkControllerOld = GetComponent<AGNetworkControllerOld>();
-            _networkControllerOld.Setup(this);
             
-            _user = GetComponent<AGUser>();
+            DontDestroyOnLoad(gameObject);
+
+            if (!AGCore.IsInitialized)
+                AGCore.Initialize();
+
+            _user = new AGUser();
+            _user.Setup(this);
 
             _eventServerController = new AGEventServerController();
             _eventServerController.Setup(this);
@@ -68,15 +70,7 @@ namespace ArenaGames
             _networkController.Setup(this);
 
             _playerData = new AGData();
-        }
-
-        private void Start()
-        {
-            DontDestroyOnLoad(gameObject);
-
-            if (!AGCore.IsInitialized)
-                AGCore.Initialize();
-
+            
             StartProcess();
         }
 
@@ -90,12 +84,13 @@ namespace ArenaGames
             var isNeedLogin = !isRefreshExist || !await NetworkController.RefreshAuthData(token, expiresIn);
             
             _splashScreen.Setup(this, isNeedLogin);
+            _networkController.SetOnline();
         }
 
         public void ShowAuthScreen()
         {
             var targetAuthPanelPrefab = IsVertical ? _authPanelPrefabPortrait : _authPanelPrefabLandscape;
-            Instantiate(targetAuthPanelPrefab);
+            _authPanel = Instantiate(targetAuthPanelPrefab).GetComponent<AGAuthUIController>();
         }
 
         private void ShowInGamePanel(bool isShow = true)
@@ -107,14 +102,24 @@ namespace ArenaGames
             else
             {
                 if (!isShow) return;
-                
-                var targetGameControlPrefab = IsVertical ? _inGameControlPrefabPortrait : _inGameControlPrefabLandscape;
-                _inGameControl = Instantiate(targetGameControlPrefab);
+
+                CreateInGameControl();
             }
+        }
+
+        private void CreateInGameControl()
+        {
+            var targetGameControlPrefab = IsVertical ? _inGameControlPrefabPortrait : _inGameControlPrefabLandscape;
+            _inGameControl = Instantiate(targetGameControlPrefab);
         }
 
         public void SetGameData(ResponseStruct.GameInfoStruct gameData)
         {
+            if (_inGameControl == null)
+            {
+                CreateInGameControl();
+            }
+            
             _gameData = gameData;
             _inGameControl.LeaderboardPanel.Setup();
         }
@@ -162,10 +167,15 @@ namespace ArenaGames
         public async UniTask<bool> TryStartGame()
         {
             var isGameAllowed = await NetworkController.IsGameAllowed();
-
+            var isGamePayed = false;
+            
             if (isGameAllowed)
             {
-                NetworkController.PayGame();
+                isGamePayed = await NetworkController.PayGame();
+            }
+
+            if (isGamePayed)
+            {
                 _inGameControl.gameObject.SetActive(false);
             }
             else
@@ -189,6 +199,28 @@ namespace ArenaGames
                 AGEventServerController.EventType.CollapseApp : 
                 AGEventServerController.EventType.ExpandApp);
         }
-    }
 
+        public void ShowConnectionError(bool isVisible)
+        {
+            if (_inGameControl == null)
+            {
+                CreateInGameControl();
+            }
+            
+            InGameControl.ShowConnectionError(isVisible);
+        }
+
+        public void TryDestroyItems()
+        {
+            if (_splashScreen != null)
+            {
+                Destroy(_splashScreen.gameObject);
+            }
+            
+            if (_authPanel != null)
+            {
+                Destroy(_authPanel.gameObject);
+            }
+        }
+    }
 }

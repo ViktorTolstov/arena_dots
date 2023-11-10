@@ -16,3 +16,5 @@ MonoBehaviour:
   GameAlias: DOTS
   IsProd: 0
   UseWebViewForSignIn: 1
+  DebugMode: 1
+  MaxConnectionErrorsCount: 5
